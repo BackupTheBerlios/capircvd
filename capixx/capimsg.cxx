@@ -4,10 +4,6 @@
 #include<assert.h>
 #include<string.h>
 
-#ifdef WIN32
-#include"wincapi.h"
-#endif
-
 #define _CBYTE         1
 #define _CWORD         2
 #define _CDWORD        3
@@ -367,10 +363,13 @@ unsigned CAPImsg::CAPI_MESSAGE_2_CMSG () {
     wordTRcpy (cmsg->m+2, &cmsg->ApplId);
     wordTRcpy (cmsg->m+6, &cmsg->Messagenumber);
 
+    msg=NULL;
+
     return 0;
 }
 
 unsigned CAPImsg::CAPI_CMSG_2_MESSAGE () {
+    msg=msgtmp;
     cmsg->m = msg;
     cmsg->l = 8;
     cmsg->p = 0;
@@ -402,8 +401,14 @@ unsigned CAPImsg::CAPI_CMSG_2_MESSAGE () {
 
 CAPImsg::CAPImsg() {
 		cmsg=new _cmsg;
+		msgtmp=new _cbyte[2048];
+		msg=msgtmp;
 		memset (cmsg, 0, sizeof(_cmsg));
 	}
+
+CAPImsg::~CAPImsg() {
+		delete msgtmp;
+		}
 
 CAPImsg::CAPImsg(_cword applid, _cword msgtype,_cword msgnumber) {
 		cmsg=new _cmsg;
@@ -739,10 +744,4 @@ void CAPImsg::RESET_B3_RESP(_cword ApplId, _cword Messagenumber,
 
 	capi_cmsg_header(ApplId, 0x87, 0x83, Messagenumber, adr);
 }
-
-/*void main() {
-
- CAPImsg *c=new CAPImsg();
- c->LISTEN_REQ(1,0,0,0,0,0,NULL,NULL);
- }*/
 

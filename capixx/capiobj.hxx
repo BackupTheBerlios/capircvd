@@ -29,16 +29,16 @@ private:
 #else
         void* capidll;
 #endif
-	_cdword ApplId;
+	_cword ApplId;
 
 #ifdef WIN32
         int (STDCALL *Xcapi_register)(_cdword MessageBufferSize,
 		_cdword maxLogicalConnection, _cdword maxDataBlocks,
-		_cdword maxBDataLen, _cdword *pApplID);
+		_cdword maxBDataLen, _cword *pApplID);
 	int (STDCALL *Xcapi_get_profile)(void* SzBuffer, _cdword CtrlNr);
 #else
         int (STDCALL *Xcapi_register)(_cdword maxLogicalConnection,
-		_cdword maxDataBlocks, _cdword maxBDataLen, _cdword *pApplID);
+		_cdword maxDataBlocks, _cdword maxBDataLen, _cword *pApplID);
 	int (STDCALL *Xcapi_get_profile)(_cdword CtrlNr, void* SzBuffer);
 #endif
         int (STDCALL *Xcapi_installed)();
@@ -52,13 +52,17 @@ private:
 		_cdword *pManufacturerMinor);
 	int (STDCALL *Xcapi_get_serial_number)(void* SzBuffer);
 
+        int put_cmessage(void* pCAPIMessage);
+        int get_cmessage(unsigned char** ppCAPIMessage);
 public:
 
 	bool isinstalled();
 	int capiregister(_cdword maxLogicalConnection, _cdword maxDataBlocks, _cdword maxBDataLen);
         int release();
-        int put_message(void* pCAPIMessage);
-        int get_message(unsigned char** ppCAPIMessage);
+
+	void operator<<(CAPImsg *Cmsg);
+	int operator>>(CAPImsg *Cmsg);
+
         int get_profile(_cdword Controller,void* SzBuffer);
         int get_manufacturer(void* SzBuffer);
         int get_version(_cdword *pCAPIMajor, _cdword *pCAPIMinor, _cdword *pManufacturerMajor, _cdword *pManufacturerMinor);

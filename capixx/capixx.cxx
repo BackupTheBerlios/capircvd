@@ -5,36 +5,68 @@
 #include"capimsg.hxx"
 
 #include<map>
+#include<iostream.h>
 
 CAPIxx::CAPIxx(int maxChannels) {
+	int ii;
 	maxchans=maxChannels;
-	capi=new CAPIobj();
 
-	if(!capi->isinstalled()) 
+	if(! (capi.isinstalled())) 
 		throw Ex("No CAPI/Controller installed!");
 
-	int res=capi->capiregister(2,7,2048);
+	capi_profile prof;
+	capi.get_profile(0,&prof);
 
-	//char *x="\x1e\x00\x02\x00\x05\x80\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00";
+        unsigned char controller=prof.ncontroller;
 
+        int bchans=0;
+        for(ii=1;ii<=controller;ii++) {
+		capi.get_profile(ii,&prof);
+		bchans+=prof.nbchannel;
+	}
+
+	int res=capi.capiregister(bchans,7,2048);
+	cout << res << endl;
 	CAPImsg *c=new CAPImsg();
-	c->LISTEN_REQ(1,0,0,0,0,0,NULL,NULL);
-	c->CAPI_CMSG_2_MESSAGE();
-	capi->put_message(c->msg);
+        for(ii=1;ii<=controller;ii++) {
+		c->LISTEN_REQ(0,0,ii,0x03ff,0x1fff03ff,0,NULL,NULL);
+		capi << c;
+	}
+	delete c;
 }
 
 CAPIxx::~CAPIxx() {
-	delete capi;
 }
 
 int CAPIxx::ProcessMessage() {
 
-	unsigned char*MSG=NULL;
-	return capi->get_message(&MSG);
-
-	int x=1;
-	unsigned long ncci=0;
-
-	return 0;
+	CAPImsg *c=new CAPImsg();
+	int res = capi >> c;
+	if(res==0) {
+		cout << hex << "Cmd: 0x" << (int)c->cmsg->Command << " SubCmd: 0x" << (int)c->cmsg->Subcommand << endl;
+		switch(c->cmsg->Subcommand) {
+		case CAPI_IND:
+		 switch(c->cmsg->Command) {
+			case CAPI_CONNECT:
+				cout << "CONNECT_IND NCCI=0x" << hex << c->cmsg->adr.adrNCCI << endl;
+			break;
+			case CAPI_DISCONNECT:
+				cout << "DISCONNECT_IND NCCI=0x" << hex << c->cmsg->adr.adrNCCI << endl;
+			break;
+			case CAPI_INFO:
+				cout << "INFO_IND NCCI=0x" << hex << c->cmsg->adr.adrNCCI << " InfoNumber=0x" << c->cmsg->InfoNumber << endl;
+			break;
+		 }
+		 break;
+		case CAPI_RESP:
+                 switch(c->cmsg->Command) {
+                        case CAPI_LISTEN:
+                                cout << "LISTEN_RESP NCCI=0x" << hex << c->cmsg->adr.adrNCCI << endl;
+                        break;
+                 }
+		 break;
+		}
+	}
+	return res;
 }
 

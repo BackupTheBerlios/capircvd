@@ -96,7 +96,12 @@ typedef uint64_t  _cqword;
 typedef unsigned char      _cbyte;
 typedef unsigned short     _cword;
 typedef unsigned long      _cdword;
+#ifdef WIN32
+#include<windows.h>
+typedef LONGLONG _cqword;
+#else
 typedef unsigned long long _cqword;
+#endif
 #endif
 
 typedef CAPI_MESSAGE   _cstruct;
@@ -174,6 +179,17 @@ typedef struct {
 
 } _cmsg;
 
+typedef struct capi_profile {
+        _cword ncontroller;      /* number of installed controller */
+        _cword nbchannel;        /* number of B-Channels */
+        _cdword goptions;         /* global options */
+        _cdword support1;         /* B1 protocols support */
+        _cdword support2;         /* B2 protocols support */
+        _cdword support3;         /* B3 protocols support */
+        _cdword reserved[6];      /* reserved */
+        _cdword manu[5];          /* manufacturer specific information */
+} capi_profile;
+
 
 
 class CAPImsg {
@@ -182,7 +198,7 @@ class CAPImsg {
 // private:
 
 public:
-        unsigned char msg[2048];
+        _cbyte *msg,*msgtmp;
         _cmsg *cmsg;
 
 	unsigned int capi_cmsg_header(unsigned int, unsigned char,
@@ -192,6 +208,8 @@ public:
 	unsigned CAPImsg::CAPI_CMSG_2_MESSAGE();
 	
 	CAPImsg();
+	~CAPImsg();
+
         CAPImsg(_cword applid, _cword msgtype,_cword msgnumber);
         CAPImsg(_cword applid, _cbyte cmd,_cbyte scmd,_cword msgnumber);
 

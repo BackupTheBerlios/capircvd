@@ -20,12 +20,24 @@ int CAPIobj::capiregister(_cdword maxLogicalConnection,
 int CAPIobj::release() {
 	return Xcapi_release(ApplId);
 }
+int CAPIobj::operator>>(CAPImsg *Cmsg) {
+	int res=get_cmessage((unsigned char **)&Cmsg->msg);
+	if(res==0)
+		Cmsg->CAPI_MESSAGE_2_CMSG();
+	return res;
+}
 
-int CAPIobj::put_message(void* pCAPIMessage) {
+void CAPIobj::operator<<(CAPImsg *Cmsg) {
+	Cmsg->cmsg->ApplId=ApplId;
+	Cmsg->CAPI_CMSG_2_MESSAGE();
+	put_cmessage(Cmsg->msg);
+}
+
+int CAPIobj::put_cmessage(void* pCAPIMessage) {
 	return Xcapi_put_message(ApplId,pCAPIMessage);
 }
 
-int CAPIobj::get_message(unsigned char** ppCAPIMesssage) {
+int CAPIobj::get_cmessage(unsigned char** ppCAPIMesssage) {
 	return Xcapi_get_message(ApplId,ppCAPIMesssage);
 }
 
@@ -71,7 +83,7 @@ CAPIobj::CAPIobj() {
 
 	Xcapi_installed=GetProcAddress(capidll,"CAPI_INSTALLED");
 	Xcapi_register=(int (STDCALL *)(_cdword, _cdword, _cdword, _cdword,
-		 _cdword*))GetProcAddress(capidll,"CAPI_REGISTER");
+		 _cword*))GetProcAddress(capidll,"CAPI_REGISTER");
 	Xcapi_release=(int (STDCALL *)(_cdword))GetProcAddress(capidll,
 		"CAPI_RELEASE");
 	Xcapi_put_message=(int (STDCALL *)(_cdword, void*))GetProcAddress(
@@ -89,7 +101,7 @@ CAPIobj::CAPIobj() {
 #endif
 #ifdef __linux__
 	Xcapi_installed=(int(*)())dlsym(capidll,"capi20_isinstalled");
-	Xcapi_register=(int (STDCALL *)(_cdword, _cdword, _cdword, _cdword*))
+	Xcapi_register=(int (STDCALL *)(_cdword, _cdword, _cdword, _cword*))
 		dlsym(capidll,"capi20_register");
 	Xcapi_release=(int (STDCALL *)(_cdword))dlsym(capidll,"capi20_release");
 	Xcapi_put_message=(int (STDCALL *)(_cdword, void*))dlsym(capidll,

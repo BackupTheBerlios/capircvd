@@ -3,9 +3,12 @@
 #include"capiobj.hxx"
 #include"capiex.hxx"
 
+#ifdef __linux__
 #include<sys/time.h>
 #include<sys/types.h>
 #include<unistd.h>
+#endif
+
 #include<iostream.h>
 
 void main() {
@@ -16,7 +19,7 @@ void main() {
 	while(!exit) {
 		int res;
 		res=capi->ProcessMessage();
-		cout << res << endl;
+
 #ifdef WIN32
 		exit=(kbhit()!=0);
 #else

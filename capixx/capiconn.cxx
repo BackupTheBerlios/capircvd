@@ -1,31 +1,19 @@
+#include"capiconn.hxx"
 
-#include"capiex.hxx"
+CAPIConnection::CAPIConnection() {
+}
 
-typedef void _cmsg;
-typedef unsigned long tNCCI;
+CAPIConnection::~CAPIConnection() {
+}
 
-class CAPIxxConnection {
+_cdword CAPIConnection::getNCCI() {
+	return NCCI;
+}
 
-protected:
+void CAPIConnection::connectind(CAPImsg *c) {
+}
 
-	tNCCI NCCI;
-	bool onHold,txData;
+void CAPIConnection::disconnectind(CAPImsg *c) {
+}
 
-public:
-	CAPIxxConnection() {};
-	~CAPIxxConnection() {};
-
-	void setNCCI(tNCCI ncci) {
-		NCCI=ncci;
-	}
-
-	tNCCI getNCCI() {
-		return NCCI;
-	}
-
-	void connectind(_cmsg *CMSG) {
-	};
-	void disconnectind() {
-	};
-};
 
