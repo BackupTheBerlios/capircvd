@@ -1,3 +1,9 @@
+0.2.39
+ No real changes
+
+0.2.38/37
+ Fixed bug, see configfile "onerror"
+
 0.2.36
  BUG:
   Ping-Connection terminates after announcement (wrong configuration)
