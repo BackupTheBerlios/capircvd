@@ -15,7 +15,7 @@ private:
 	_cdword ApplId;
 	unsigned int maxchans;
 
-//	std::map<_cdword,CAPIConnection*> connections;
+	map<_cdword,CAPIConnection*> connections;
 	int incoming_unassigned;
 
 public:

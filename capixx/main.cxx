@@ -28,7 +28,7 @@ void main() {
 		int retval;
 		FD_ZERO(&rfds);
 		FD_SET(0, &rfds);
-		tv.tv_sec = 1;
+		tv.tv_sec = 0;
 		tv.tv_usec = 1;
 		retval = select(1, &rfds, NULL, NULL, &tv);
 		exit=retval;

@@ -1,5 +1,5 @@
 
-main : capixx.o capiobj.o capiex.o capimsg.o main.o ; gcc -g main.o capiobj.o capixx.o capiex.o capimsg.o -o main -lstdc++ -ldl
+main : capixx.o capiobj.o capiex.o capimsg.o capiconn.o main.o ; gcc -g main.o capiobj.o capixx.o capiex.o capimsg.o capiconn.o -o main -lstdc++ -ldl
 
 main.o : main.cxx ; gcc -g -c main.cxx -o main.o
 
@@ -10,6 +10,8 @@ capiobj.o : capiobj.cxx ; gcc -g -c capiobj.cxx -o capiobj.o
 capiex.o : capiex.cxx ; gcc -g -c capiex.cxx -o capiex.o 
 
 capimsg.o : capimsg.cxx ; gcc -g -c capimsg.cxx -o capimsg.o
+
+capiconn.o : capiconn.cxx ; gcc -g -c capiconn.cxx -o capiconn.o
 
 test : main ; ./main
 

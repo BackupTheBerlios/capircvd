@@ -8,7 +8,7 @@ bool CAPIobj::isinstalled() {
 int CAPIobj::capiregister(_cdword maxLogicalConnection,
 	_cdword maxDataBlocks, _cdword maxBDataLen) {
 #ifdef WIN32
-	int res=Xcapi_register(maxLogicalConnection*2048,maxLogicalConnection,
+	int res=Xcapi_register((maxLogicalConnection+1)*1024,maxLogicalConnection,
 		maxDataBlocks,maxBDataLen,&ApplId);
 #else
 	int res=Xcapi_register(maxLogicalConnection,maxDataBlocks,

@@ -3,6 +3,7 @@
 #include"capiobj.hxx"
 #include"capiex.hxx"
 #include"capimsg.hxx"
+#include"capiconn.hxx"
 
 #include<map>
 #include<iostream.h>
@@ -48,10 +49,19 @@ int CAPIxx::ProcessMessage() {
 		case CAPI_IND:
 		 switch(c->cmsg->Command) {
 			case CAPI_CONNECT:
+				{
 				cout << "CONNECT_IND NCCI=0x" << hex << c->cmsg->adr.adrNCCI << endl;
+				CAPIConnection *conn;
+				connections[c->cmsg->adr.adrNCCI]=conn=new CAPIConnection(c,&capi);
+				}
+			break;
+			case CAPI_CONNECT_ACTIVE:
+				cout << "CONNECT_ACTIVE_IND NCCI=0x" << hex << c->cmsg->adr.adrNCCI << endl;
+				connections[c->cmsg->adr.adrNCCI]->connectactiveind(c);
 			break;
 			case CAPI_DISCONNECT:
 				cout << "DISCONNECT_IND NCCI=0x" << hex << c->cmsg->adr.adrNCCI << endl;
+				delete connections[c->cmsg->adr.adrNCCI];
 			break;
 			case CAPI_INFO:
 				cout << "INFO_IND NCCI=0x" << hex << c->cmsg->adr.adrNCCI << " InfoNumber=0x" << c->cmsg->InfoNumber << endl;
